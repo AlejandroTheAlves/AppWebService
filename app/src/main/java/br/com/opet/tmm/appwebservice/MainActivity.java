@@ -29,22 +29,23 @@ public class MainActivity extends Activity {
         new APIConnection().execute();
     }
 
-    private class APIConnection extends AsyncTask<Void,Void,String>{
+    private class APIConnection extends AsyncTask<Void,Void,Tempo>{
         @Override
         public void onPreExecute(){
         }
 
         @Override
-        public String doInBackground(Void... params){
+        public Tempo doInBackground(Void... params){
             HttpURLConnection con = null;
             try {
-                URL url = new URL("http://www.pudim.com.br");
+                URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=Curitiba&mode=json&units=metric&cnt=1&appid=440b84a8027be4fcf90f9b83e4b45aa9");
                 con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("GET");
                 con.setDoInput(true);
 
                 String resultado = Util.streamToString(con.getInputStream());
-                return resultado;
+                Tempo tempo = Util.JSONToTempo(resultado);
+                return tempo;
             }
             catch (Exception e){
                 e.printStackTrace();
@@ -56,8 +57,10 @@ public class MainActivity extends Activity {
         }
 
         @Override
-        public void onPostExecute(String s){
-            textInfo.setText(s);
+        public void onPostExecute(Tempo tempo){
+            String info = "Cidade: " + tempo.getCidade();
+            info += "\nTemperatura: " + tempo.getTemperatura();
+            textInfo.setText(info);
         }
     }
 }
